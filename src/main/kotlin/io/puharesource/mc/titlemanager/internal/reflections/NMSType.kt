@@ -8,7 +8,7 @@ enum class NMSType(private val path: String, private val usesVersion: Boolean = 
     ORG_SPIGOTMC("org.spigotmc");
 
     fun getReflectionClass(path: String): ReflectionClass {
-        if (usesVersion) {
+        if (usesVersion && NMSManager.isPackageVersion) {
             val version = NMSManager.serverVersion
             return ReflectionClass("${this.path}.$version.$path")
         }

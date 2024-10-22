@@ -30,7 +30,8 @@ class PlayerConnection : NMSClass() {
     private val classPacket: Class<*> = provider["Packet"].handle
     private val methodSendPacket: Method by lazy { clazz.getMethod("sendPacket", classPacket) }
 
-    val networkManager = clazz.getField(if (NMSManager.versionIndex == 11) "a" else if (NMSManager.versionIndex == 12) "a" else if (NMSManager.versionIndex == 13) "b" else "networkManager")
+    val networkManager = if (NMSManager.versionIndex == 15 || NMSManager.versionIndex == 14) clazz.handle.superclass.getDeclaredField("e")
+    else clazz.getField(if (NMSManager.versionIndex == 11 || NMSManager.versionIndex == 12) "a" else if (NMSManager.versionIndex == 13) "b" else "networkManager")
 
     fun sendPacket(instance: Any, packet: Any): Any? = methodSendPacket.invoke(instance, packet) // NMSVersionIndex <= 2
 }
@@ -192,7 +193,7 @@ class ChatComponentText : NMSClass() {
 }
 
 object ChatSerializer : NMSClass() {
-    private val deserializeMethod by lazy { clazz.getMethod("a", String::class.java) }
+    private val deserializeMethod by lazy { clazz.getMethod(if (NMSManager.versionIndex >= 14) "fromJSON" else "a", String::class.java) }
 
     fun deserializeLegacyText(text: String) = deserialize(*TextComponent.fromLegacyText(text))
 

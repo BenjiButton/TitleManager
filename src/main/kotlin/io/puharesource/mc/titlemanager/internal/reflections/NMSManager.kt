@@ -6,8 +6,10 @@ import java.util.regex.Pattern
 
 object NMSManager {
     private val VERSION_PATTERN: Pattern = Pattern.compile("(v|)[0-9][_.][0-9]+[_.][R0-9]*")
+    private val BUKKIT_VERSION_PATTERN: Pattern = Pattern.compile("^(?:v|)([0-9][_.][0-9]+)[_.][0-9]+-R[0-9.]+(?:-SNAPSHOT)?$")
     private val supportedVersions: MutableMap<String, Int> = TreeMap(String.CASE_INSENSITIVE_ORDER)
 
+    val isPackageVersion: Boolean
     val serverVersion: String
     val versionIndex: Int
 
@@ -30,13 +32,28 @@ object NMSManager {
         supportedVersions["v1_16_R3"] = 10
         supportedVersions["v1_17_R1"] = 11
         supportedVersions["v1_18_R1"] = 12
+        supportedVersions["v1_18_R2"] = 12
         supportedVersions["v1_19_R1"] = 13
+        supportedVersions["v1_19_R2"] = 13
+        supportedVersions["v1_19_R3"] = 13
+        supportedVersions["v1_20_R1"] = 14
+        supportedVersions["v1_20_R2"] = 14
+        supportedVersions["v1_20_R3"] = 14
+        supportedVersions["v1_20_R4"] = 14
+        supportedVersions["v1_21_R1"] = 15
 
         val pkg: String = Bukkit.getServer().javaClass.`package`.name
         var version = pkg.substring(pkg.lastIndexOf(".") + 1)
 
-        if (!VERSION_PATTERN.matcher(version).matches()) {
+        isPackageVersion = VERSION_PATTERN.matcher(version).matches()
+        if (!isPackageVersion) {
             version = ""
+            var versionMatcher = BUKKIT_VERSION_PATTERN.matcher(Bukkit.getServer().bukkitVersion)
+            if (versionMatcher.find()) {
+                var bukkitVersion = versionMatcher.group(1).replace(".", "_")
+                var versionBase = "v${bukkitVersion}_R"
+                version = supportedVersions.keys.filter { it.startsWith(versionBase) }.maxOrNull() ?: "${versionBase}1"
+            }
         }
 
         serverVersion = version
@@ -44,7 +61,8 @@ object NMSManager {
     }
 
     private fun getVersionIndex(version: String) = supportedVersions.getOrElse(version) {
-        supportedVersions.values.maxOrNull() ?: -1
+        supportedVersions.filter { it.key.startsWith(version.dropLast(1)) }.values.maxOrNull()
+            ?: supportedVersions.values.maxOrNull() ?: -1
     }
 
     fun getClassProvider(): NMSClassProvider {
@@ -63,7 +81,9 @@ object NMSManager {
             11 -> Provider117
             12 -> Provider117
             13 -> Provider119
-            else -> Provider119
+            14 -> Provider120
+            15 -> Provider120
+            else -> Provider120
         }
     }
 }

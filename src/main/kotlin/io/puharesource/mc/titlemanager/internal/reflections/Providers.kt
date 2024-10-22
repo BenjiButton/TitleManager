@@ -4,8 +4,6 @@ import io.puharesource.mc.titlemanager.internal.reflections.NMSType.NET_MINECRAF
 import io.puharesource.mc.titlemanager.internal.reflections.NMSType.NET_MINECRAFT_SERVER
 import io.puharesource.mc.titlemanager.internal.reflections.NMSType.ORG_BUKKIT_CRAFTBUKKIT
 import io.puharesource.mc.titlemanager.internal.reflections.NMSType.ORG_SPIGOTMC
-import io.puharesource.mc.titlemanager.internal.reflections.Provider113.associate
-import io.puharesource.mc.titlemanager.internal.reflections.Provider116.associate
 
 /**
  * Provides classes for Minecraft 1.7 - 1.8 Protocol Hack
@@ -214,13 +212,31 @@ object Provider117 : NMSClassProvider() {
 }
 
 /**
- * Provides classes for Minecraft 1.19 <=
+ * Provides classes for Minecraft 1.19
  */
 object Provider119 : NMSClassProvider() {
     init {
         "ChatComponentText".associate(NET_MINECRAFT_NETWORK, "chat.IChatMutableComponent")
         "IChatBaseComponent".associate(NET_MINECRAFT_NETWORK, "chat.IChatBaseComponent")
         "ChatSerializer".associate(NET_MINECRAFT_NETWORK, "chat.IChatBaseComponent\$ChatSerializer")
+        "CraftPlayer".associate(ORG_BUKKIT_CRAFTBUKKIT, "entity.CraftPlayer")
+        "EntityPlayer".associate(NET_MINECRAFT_SERVER, "level.EntityPlayer")
+        "PlayerConnection".associate(NET_MINECRAFT_SERVER, "network.PlayerConnection")
+        "NetworkManager".associate(NET_MINECRAFT_NETWORK, "NetworkManager")
+        "Packet".associate(NET_MINECRAFT_NETWORK, "protocol.Packet")
+        "PacketPlayOutChat".associate(NET_MINECRAFT_NETWORK, "protocol.game.ClientboundSystemChatPacket")
+        "PacketPlayOutPlayerListHeaderFooter".associate(NET_MINECRAFT_NETWORK, "protocol.game.PacketPlayOutPlayerListHeaderFooter")
+    }
+}
+
+/**
+ * Provides classes for Minecraft 1.20 <=
+ */
+object Provider120 : NMSClassProvider() {
+    init {
+        "ChatComponentText".associate(NET_MINECRAFT_NETWORK, "chat.IChatMutableComponent")
+        "IChatBaseComponent".associate(NET_MINECRAFT_NETWORK, "chat.IChatBaseComponent")
+        "ChatSerializer".associate(ORG_BUKKIT_CRAFTBUKKIT, "util.CraftChatMessage")
         "CraftPlayer".associate(ORG_BUKKIT_CRAFTBUKKIT, "entity.CraftPlayer")
         "EntityPlayer".associate(NET_MINECRAFT_SERVER, "level.EntityPlayer")
         "PlayerConnection".associate(NET_MINECRAFT_SERVER, "network.PlayerConnection")
